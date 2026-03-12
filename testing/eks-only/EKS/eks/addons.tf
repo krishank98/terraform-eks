@@ -3,6 +3,7 @@ resource "helm_release" "metrics_server" {
   repository = "https://kubernetes-sigs.github.io/metrics-server/"
   chart      = "metrics-server"
   namespace  = "kube-system"
+  version    = "3.13.0"
 
   set = [
     {
@@ -26,6 +27,14 @@ resource "helm_release" "cluster_autoscaler" {
     {
       name  = "awsRegion"
       value = var.aws_region
+    },
+    {
+      name  = "rbac.serviceAccount.create"
+      value = "true"
+    },
+    {
+      name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.eks.cluster_autoscaler_role_arn
     }
   ]
 }

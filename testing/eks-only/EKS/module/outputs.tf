@@ -13,3 +13,7 @@ output "cluster_certificate_authority_data" {
 output "vpc_id" {
   value = aws_vpc.vpc.id
 }
+
+output "cluster_autoscaler_role_arn" {
+  value = aws_iam_role.cluster_autoscaler.arn
+}

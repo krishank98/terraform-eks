@@ -68,6 +68,12 @@ resource "aws_instance" "jump_server" {
     aws_security_group.jump_server_sg.id
   ]
 
+  lifecycle {
+    ignore_changes = [
+      instance_type
+    ]
+  }
+  
   associate_public_ip_address = true
 
   #########################################

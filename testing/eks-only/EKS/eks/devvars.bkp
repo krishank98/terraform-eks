@@ -1,0 +1,99 @@
+env        = "dev"
+aws_region = "us-east-1"
+
+cluster_name = "dev-trial"
+
+# ---------------- VPC ----------------
+vpc_name       = "vpc"
+igw_name       = "igw"
+vpc_cidr_block = "10.16.0.0/16"
+cidr_block = "10.16.0.0/16"
+pub_subnet_count = 3
+
+pub_cidr_block = [
+  "10.16.0.0/20",
+  "10.16.16.0/20",
+  "10.16.32.0/20"
+]
+
+pub_availability_zone = [
+  "us-east-1a",
+  "us-east-1b",
+  "us-east-1c"
+]
+
+pub_sub_name = "subnet-public"
+
+pri_subnet_count = 3
+
+pri_cidr_block = [
+  "10.16.128.0/20",
+  "10.16.144.0/20",
+  "10.16.160.0/20"
+]
+
+pri_availability_zone = [
+  "us-east-1a",
+  "us-east-1b",
+  "us-east-1c"
+]
+
+pri_sub_name = "subnet-private"
+
+public_rt_name  = "public-route-table"
+private_rt_name = "private-route-table"
+
+eip_name = "elasticip-ngw"
+ngw_name = "ngw"
+
+# ---------------- IAM ----------------
+is_eks_role_enabled           = true
+is_eks_nodegroup_role_enabled = true
+
+# ---------------- Security ----------------
+eks_sg = "eks-sg"
+
+# ---------------- EKS Cluster ----------------
+is_eks_cluster_enabled = true
+cluster_version        = "1.33"
+
+endpoint_private_access = true
+endpoint_public_access  = true
+
+# ---------------- Node Groups ----------------
+# Safe instance types
+
+ondemand_instance_types = [
+  "t3.micro"
+]
+
+spot_instance_types = [
+  "t3.micro",
+  "t3.small",
+  "t3.medium"
+]
+
+desired_capacity_on_demand = 1
+min_capacity_on_demand     = 1
+max_capacity_on_demand     = 2
+
+desired_capacity_spot = 1
+min_capacity_spot     = 1
+max_capacity_spot     = 2
+
+# ---------------- Addons ----------------
+addons = [
+  {
+    name    = "vpc-cni"
+    version = "v1.20.0-eksbuild.1"
+  },
+  {
+    name    = "coredns"
+    version = "v1.12.2-eksbuild.4"
+  },
+  {
+    name    = "kube-proxy"
+    version = "v1.33.0-eksbuild.2"
+  }
+]
+
