@@ -71,3 +71,15 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   depends_on = [module.eks]
 }
+
+resource "aws_eks_addon" "ebs_csi_driver" {
+
+  cluster_name = module.eks.cluster_name
+  addon_name   = "aws-ebs-csi-driver"
+
+  service_account_role_arn = module.eks.ebs_csi_role_arn
+
+  depends_on = [
+    module.eks
+  ]
+}
