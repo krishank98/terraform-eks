@@ -1,0 +1,35 @@
+resource "aws_ecr_repository" "fullname_api" {
+  name = "fullname-python-api"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    Name = "fullname-python-api"
+  }
+}
+
+resource "aws_ecr_repository" "location_api" {
+  name = "location-node-api"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    Name = "location-node-api"
+  }
+}
+
+resource "aws_ecr_repository" "marital_api" {
+  name = "marital-java-api"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    Name = "marital-java-api"
+  }
+}
