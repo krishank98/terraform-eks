@@ -38,6 +38,7 @@ resource "helm_release" "cluster_autoscaler" {
     }
   ]
 }
+
 resource "helm_release" "aws_load_balancer_controller" {
 
   name       = "aws-load-balancer-controller"
@@ -57,6 +58,16 @@ resource "helm_release" "aws_load_balancer_controller" {
     {
       name  = "vpcId"
       value = module.eks.vpc_id
+    },
+    {
+      name  = "serviceAccount.create"
+      value = "true"
+    },
+    {
+      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.eks.alb_controller_role_arn
     }
   ]
+
+  depends_on = [module.eks]
 }

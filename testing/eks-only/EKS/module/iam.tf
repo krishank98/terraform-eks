@@ -182,13 +182,21 @@ resource "aws_iam_role_policy_attachment" "cluster_autoscaler_attach" {
   policy_arn = aws_iam_policy.cluster_autoscaler.arn
 }
 
+#############################################
+# ALB Controller IAM Policy
+#############################################
+
 resource "aws_iam_policy" "alb_controller" {
   name   = "AWSLoadBalancerControllerIAMPolicy"
   policy = file("${path.module}/alb-iam-policy.json")
 }
 
-resource "aws_iam_role" "alb_controller" {
-  name = "eks-alb-controller-role"
+#############################################
+# ALB Controller IAM Role (IRSA)
+#############################################
+
+resource "aws_iam_role" "alb_controller_role" {
+  name = "AmazonEKSLoadBalancerControllerRole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -204,7 +212,7 @@ resource "aws_iam_role" "alb_controller" {
 
         Condition = {
           StringEquals = {
-            "${replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
           }
         }
       }
@@ -212,7 +220,16 @@ resource "aws_iam_role" "alb_controller" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "alb_attach" {
-  role       = aws_iam_role.alb_controller.name
+#############################################
+# Attach Policy to Role
+#############################################
+
+resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
+  role       = aws_iam_role.alb_controller_role.name
   policy_arn = aws_iam_policy.alb_controller.arn
 }
+
+#############################################
+# Kubernetes Service Account for IRSA
+#############################################
+
