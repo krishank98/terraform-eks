@@ -6,6 +6,10 @@ resource "random_integer" "random_suffix" {
 
 data "aws_eks_cluster" "cluster" {
   name = var.cluster_name
+
+  depends_on = [
+    aws_eks_cluster.eks
+  ]
 }
 
 data "tls_certificate" "oidc" {

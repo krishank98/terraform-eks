@@ -2,6 +2,8 @@
 # Get latest Ubuntu 22.04 AMI
 #########################################
 
+data "aws_region" "current" {}
+
 data "aws_ami" "ubuntu" {
 
   most_recent = true
@@ -17,6 +19,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 }
+
 
 #########################################
 # Security Group for Jump Server
@@ -59,11 +62,11 @@ resource "aws_security_group" "jump_server_sg" {
 resource "aws_instance" "jump_server" {
 
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
+  instance_type = "c7i-flex.large"
 
   subnet_id = aws_subnet.public_subnet[0].id
   key_name  = "eks-key-tf"
-
+  iam_instance_profile = aws_iam_instance_profile.jump_profile.name
   vpc_security_group_ids = [
     aws_security_group.jump_server_sg.id
   ]
@@ -80,7 +83,7 @@ resource "aws_instance" "jump_server" {
   # User Data Script
   #########################################
 
-  user_data = <<-EOF
+ user_data = <<-EOF
               #!/bin/bash
               set -e
 
@@ -114,7 +117,18 @@ resource "aws_instance" "jump_server" {
               ################################
               curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-              EOF
+              ################################
+              # Configure kubeconfig
+              ################################
+              aws eks update-kubeconfig \
+                --region ${data.aws_region.current.name} \
+                --name ${aws_eks_cluster.eks[0].name}
+
+EOF
+
+    depends_on = [
+    aws_eks_cluster.eks
+  ]
 
   tags = {
     Name = "${var.cluster_name}-jump-server"
